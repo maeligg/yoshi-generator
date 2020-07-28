@@ -7,16 +7,17 @@ hexRgb = require('hex-rgb');
 const yoshiPalette = {
     green: ['#00f801', '#00b800', '#007800'],
     yellow: ['#f8f800', '#f8c000', '#f87800'],
-    // red: [],
-    // blue: []
-}
+    red: ['#f80000', '#b80000', '#880000'],
+    blue: ['#8888f8', '#6868d8', '#4040d8']
+};
+const greenPaletteRGB = yoshiPalette.green.map(color => hexRgb(color));
 
 mergeImages([
     { src: './img/empty.png' },
-    { src: `./img/head/head${Math.floor(Math.random() * 4) + 1}.png`, x: 0, y: 0 },
-    { src: `./img/body/body${Math.floor(Math.random() * 4) + 1}.png`, x: 16, y: 24 },
-    { src: `./img/feet/feet${Math.floor(Math.random() * 4) + 1}.png`, x: 16, y: 37 },
-    { src: `./img/tail/tail${Math.floor(Math.random() * 2) + 1}.png`, x: 30, y: 24 }]
+    { src: `./img/head/head${Math.floor(Math.random() * 9) + 1}.png`, x: 0, y: 0 },
+    { src: `./img/body/body${Math.floor(Math.random() * 3) + 1}.png`, x: 16, y: 24 },
+    { src: `./img/feet/feet${Math.floor(Math.random() * 3) + 1}.png`, x: 16, y: 36 },
+    { src: `./img/tail/tail${Math.floor(Math.random() * 3) + 1}.png`, x: 30, y: 0 }]
 , {
   Canvas: Canvas,
   Image: Image
@@ -26,6 +27,7 @@ mergeImages([
     console.log('Yoshi created');
 
     // Now let's paint our boy
+    const randomPaletteRGB = Object.values(yoshiPalette)[Math.floor(Math.random() * Object.keys(yoshiPalette).length)].map(color => hexRgb(color));
     fs.createReadStream("./dist/out-temp.png")
         .pipe(
             new PNG({
@@ -36,11 +38,32 @@ mergeImages([
             for (let y = 0; y < this.height; y++) {
                 for (let x = 0; x < this.width; x++) {
                     const idx = (this.width * y + x) << 2;
-            
-                    // invert color
-                    this.data[idx] = 255 - this.data[idx];
-                    this.data[idx + 1] = 255 - this.data[idx + 1];
-                    this.data[idx + 2] = 255 - this.data[idx + 2];
+
+                    if(
+                        this.data[idx] === greenPaletteRGB[0].red
+                        && this.data[idx + 1] === greenPaletteRGB[0].green
+                        && this.data[idx + 2] === greenPaletteRGB[0].blue
+                    ) {
+                        this.data[idx] = randomPaletteRGB[0].red;
+                        this.data[idx + 1] = randomPaletteRGB[0].green;
+                        this.data[idx + 2] = randomPaletteRGB[0].blue;
+                    } else if (
+                        this.data[idx] === greenPaletteRGB[1].red
+                        && this.data[idx + 1] === greenPaletteRGB[1].green
+                        && this.data[idx + 2] === greenPaletteRGB[1].blue
+                    ) {
+                        this.data[idx] = randomPaletteRGB[1].red;
+                        this.data[idx + 1] = randomPaletteRGB[1].green;
+                        this.data[idx + 2] = randomPaletteRGB[1].blue;
+                    } else if (
+                        this.data[idx] === greenPaletteRGB[2].red
+                        && this.data[idx + 1] === greenPaletteRGB[2].green
+                        && this.data[idx + 2] === greenPaletteRGB[2].blue
+                    ) {
+                        this.data[idx] = randomPaletteRGB[2].red;
+                        this.data[idx + 1] = randomPaletteRGB[2].green;
+                        this.data[idx + 2] = randomPaletteRGB[2].blue;
+                    }
                 }
             }
         
