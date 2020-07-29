@@ -8,16 +8,19 @@ const yoshiPalette = {
     green: ['#00f801', '#00b800', '#007800'],
     yellow: ['#f8f800', '#f8c000', '#f87800'],
     red: ['#f80000', '#b80000', '#880000'],
-    blue: ['#8888f8', '#6868d8', '#4040d8']
+    blue: ['#8888f8', '#6868d8', '#4040d8'],
+    pink: ['#f296d8', '#d962b7', '#9e4785'],
+    purple: ['#bc77eb', '#8849b3', '#65258f'],
+    brown: ['#f2aE27', '#bf8a1f', '#9c7019']
 };
 const greenPaletteRGB = yoshiPalette.green.map(color => hexRgb(color));
 
 mergeImages([
     { src: './img/empty.png' },
-    { src: `./img/head/head${Math.floor(Math.random() * 9) + 1}.png`, x: 0, y: 0 },
-    { src: `./img/body/body${Math.floor(Math.random() * 3) + 1}.png`, x: 16, y: 24 },
+    { src: `./img/head/head${Math.floor(Math.random() * 15) + 1}.png`, x: 0, y: 0 },
+    { src: `./img/body/body${Math.floor(Math.random() * 7) + 1}.png`, x: 16, y: 24 },
     { src: `./img/feet/feet${Math.floor(Math.random() * 3) + 1}.png`, x: 16, y: 36 },
-    { src: `./img/tail/tail${Math.floor(Math.random() * 3) + 1}.png`, x: 30, y: 0 }]
+    { src: `./img/tail/tail${Math.floor(Math.random() * 5) + 1}.png`, x: 30, y: 0 }]
 , {
   Canvas: Canvas,
   Image: Image
