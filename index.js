@@ -41,81 +41,81 @@ Promise.all(jimps).then(function(data) {
 }).then(function(data) {
     new Jimp(140, 80, `hsla(${Math.floor(Math.random() * 360)}, 85%, 95%, 1)`, (err, image) => {
         if (err) { console.log(err) }
-        return image
+        image
             .composite(data[0],30,0)
             .composite(data[1],62,48)
             .composite(data[2],62,72)
             .composite(data[3],90,0)
             .write('./dist/out-temp.png');
-    });
-});
 
-// Now let's paint our boy
-const randomPaletteRGB = Object.values(yoshiPalette)[Math.floor(Math.random() * Object.keys(yoshiPalette).length)].map(color => hexRgb(color));
-fs.createReadStream('./dist/out-temp.png')
-    .pipe(
-        new PNG({
-        filterType: 4,
-        })
-    )
-    .on('parsed', function () {
-        for (let y = 0; y < this.height; y++) {
-            for (let x = 0; x < this.width; x++) {
-                const idx = (this.width * y + x) << 2;
+        // Now let's paint our boy
+        const randomPaletteRGB = Object.values(yoshiPalette)[Math.floor(Math.random() * Object.keys(yoshiPalette).length)].map(color => hexRgb(color));
+        fs.createReadStream('./dist/out-temp.png')
+            .pipe(
+                new PNG({
+                filterType: 4,
+                })
+            )
+            .on('parsed', function () {
+                for (let y = 0; y < this.height; y++) {
+                    for (let x = 0; x < this.width; x++) {
+                        const idx = (this.width * y + x) << 2;
 
-                if(
-                    this.data[idx] === greenPaletteRGB[0].red
-                    && this.data[idx + 1] === greenPaletteRGB[0].green
-                    && this.data[idx + 2] === greenPaletteRGB[0].blue
-                ) {
-                    this.data[idx] = randomPaletteRGB[0].red;
-                    this.data[idx + 1] = randomPaletteRGB[0].green;
-                    this.data[idx + 2] = randomPaletteRGB[0].blue;
-                } else if (
-                    this.data[idx] === greenPaletteRGB[1].red
-                    && this.data[idx + 1] === greenPaletteRGB[1].green
-                    && this.data[idx + 2] === greenPaletteRGB[1].blue
-                ) {
-                    this.data[idx] = randomPaletteRGB[1].red;
-                    this.data[idx + 1] = randomPaletteRGB[1].green;
-                    this.data[idx + 2] = randomPaletteRGB[1].blue;
-                } else if (
-                    this.data[idx] === greenPaletteRGB[2].red
-                    && this.data[idx + 1] === greenPaletteRGB[2].green
-                    && this.data[idx + 2] === greenPaletteRGB[2].blue
-                ) {
-                    this.data[idx] = randomPaletteRGB[2].red;
-                    this.data[idx + 1] = randomPaletteRGB[2].green;
-                    this.data[idx + 2] = randomPaletteRGB[2].blue;
-                }
-            }
-        }
-    
-        const dist = this.pack().pipe(fs.createWriteStream('./dist/out-final.png'));
-
-        dist.addListener('finish', () => {
-            fs.readFile('./dist/out-final.png', { encoding: 'base64' }, (err, b64) => {
-                if (err) throw err;
-
-                // And finally we post the image to Twitter
-                T.post('media/upload', { media_data: b64 }, function(err, data) {
-                    if (err) {
-                        console.log('error!', err);
-                    } else {
-                        console.log('tweeting the image...');
-                        
-                        T.post(
-                            'statuses/update',
-                            {
-                                media_ids: new Array(data.media_id_string)
-                            },
-                            function(err) {
-                                if (err){
-                                console.log('ERROR:\n', err);
-                                }
-                            }
-                        );
+                        if(
+                            this.data[idx] === greenPaletteRGB[0].red
+                            && this.data[idx + 1] === greenPaletteRGB[0].green
+                            && this.data[idx + 2] === greenPaletteRGB[0].blue
+                        ) {
+                            this.data[idx] = randomPaletteRGB[0].red;
+                            this.data[idx + 1] = randomPaletteRGB[0].green;
+                            this.data[idx + 2] = randomPaletteRGB[0].blue;
+                        } else if (
+                            this.data[idx] === greenPaletteRGB[1].red
+                            && this.data[idx + 1] === greenPaletteRGB[1].green
+                            && this.data[idx + 2] === greenPaletteRGB[1].blue
+                        ) {
+                            this.data[idx] = randomPaletteRGB[1].red;
+                            this.data[idx + 1] = randomPaletteRGB[1].green;
+                            this.data[idx + 2] = randomPaletteRGB[1].blue;
+                        } else if (
+                            this.data[idx] === greenPaletteRGB[2].red
+                            && this.data[idx + 1] === greenPaletteRGB[2].green
+                            && this.data[idx + 2] === greenPaletteRGB[2].blue
+                        ) {
+                            this.data[idx] = randomPaletteRGB[2].red;
+                            this.data[idx + 1] = randomPaletteRGB[2].green;
+                            this.data[idx + 2] = randomPaletteRGB[2].blue;
+                        }
                     }
+                }
+            
+                const dist = this.pack().pipe(fs.createWriteStream('./dist/out-final.png'));
+
+                dist.addListener('finish', () => {
+                    fs.readFile('./dist/out-final.png', { encoding: 'base64' }, (err, b64) => {
+                        if (err) throw err;
+
+                        // And finally we post the image to Twitter
+                        T.post('media/upload', { media_data: b64 }, function(err, data) {
+                            if (err) {
+                                console.log('error!', err);
+                            } else {
+                                console.log('tweeting the image...');
+                                
+                                T.post(
+                                    'statuses/update',
+                                    {
+                                        media_ids: new Array(data.media_id_string)
+                                    },
+                                    function(err) {
+                                        if (err){
+                                        console.log('ERROR:\n', err);
+                                        }
+                                    }
+                                );
+                            }
+                        });
+                    });
                 });
             });
         });
