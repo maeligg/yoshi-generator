@@ -1,7 +1,5 @@
 require('dotenv').config();
 const fs = require('fs'),
-    mergeImages = require('merge-images'),
-    { Canvas, Image } = require('canvas'),
     PNG = require('pngjs').PNG,
     hexRgb = require('hex-rgb'),
     Jimp = require('jimp')

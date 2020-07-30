@@ -9,7 +9,6 @@
   },
   "license": "ISC",
   "dependencies": {
-    "canvas": "^2.6.1",
     "dotenv": "^8.2.0",
     "hex-rgb": "^4.1.0",
     "jimp": "^0.14.0",
