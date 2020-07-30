@@ -1,8 +1,20 @@
+require('dotenv').config();
 const fs = require('fs'),
-mergeImages = require('merge-images'),
-{ Canvas, Image } = require('canvas'),
-PNG = require("pngjs").PNG,
-hexRgb = require('hex-rgb');
+    mergeImages = require('merge-images'),
+    { Canvas, Image } = require('canvas'),
+    PNG = require('pngjs').PNG,
+    hexRgb = require('hex-rgb'),
+    Jimp = require('jimp')
+    Twit = require('twit'),
+    config = {
+        twitter: {
+            consumer_key: process.env.CONSUMER_KEY,
+            consumer_secret: process.env.CONSUMER_SECRET,
+            access_token: process.env.ACCESS_TOKEN,
+            access_token_secret: process.env.ACCESS_TOKEN_SECRET
+        }
+    },
+    T = new Twit(config.twitter);
 
 const yoshiPalette = {
     green: ['#00f801', '#00b800', '#007800'],
@@ -13,31 +25,35 @@ const yoshiPalette = {
     purple: ['#bc77eb', '#8849b3', '#65258f'],
     brown: ['#f2aE27', '#bf8a1f', '#9c7019']
 };
+
 const greenPaletteRGB = yoshiPalette.green.map(color => hexRgb(color));
 
+// First we prepare our background
+new Jimp(140, 80, `hsla(${Math.floor(Math.random() * 360)}, 75%, 95%, 1)`, (err, image) => { image.write('./dist/background.png') });
+
+// Then we Dr Frankenstein the different yoshi parts
 mergeImages([
-    { src: './img/empty.png' },
-    { src: `./img/head/head${Math.floor(Math.random() * 15) + 1}.png`, x: 0, y: 0 },
-    { src: `./img/body/body${Math.floor(Math.random() * 7) + 1}.png`, x: 16, y: 24 },
-    { src: `./img/feet/feet${Math.floor(Math.random() * 3) + 1}.png`, x: 16, y: 36 },
-    { src: `./img/tail/tail${Math.floor(Math.random() * 5) + 1}.png`, x: 30, y: 0 }]
+    { src: './dist/background.png' },
+    { src: `./img/head/head${Math.floor(Math.random() * 15) + 1}.png`, x: 30, y: 0 },
+    { src: `./img/body/body${Math.floor(Math.random() * 7) + 1}.png`, x: 62, y: 48 },
+    { src: `./img/feet/feet${Math.floor(Math.random() * 3) + 1}.png`, x: 62, y: 72 },
+    { src: `./img/tail/tail${Math.floor(Math.random() * 5) + 1}.png`, x: 90, y: 0 }]
 , {
   Canvas: Canvas,
   Image: Image
 })
   .then(b64 => fs.writeFile('./dist/out-temp.png', b64.split(';base64,').pop(), 'base64', function(err) {
     if (err) { console.log(err) };
-    console.log('Yoshi created');
 
     // Now let's paint our boy
     const randomPaletteRGB = Object.values(yoshiPalette)[Math.floor(Math.random() * Object.keys(yoshiPalette).length)].map(color => hexRgb(color));
-    fs.createReadStream("./dist/out-temp.png")
+    fs.createReadStream('./dist/out-temp.png')
         .pipe(
             new PNG({
             filterType: 4,
             })
         )
-        .on("parsed", function () {
+        .on('parsed', function () {
             for (let y = 0; y < this.height; y++) {
                 for (let x = 0; x < this.width; x++) {
                     const idx = (this.width * y + x) << 2;
@@ -70,8 +86,34 @@ mergeImages([
                 }
             }
         
-            this.pack().pipe(fs.createWriteStream("./dist/out-final.png"));
-            console.log('Yoshi painted');
+            const dist = this.pack().pipe(fs.createWriteStream('./dist/out-final.png'));
+
+            dist.addListener('finish', () => {
+                fs.readFile('./dist/out-final.png', { encoding: 'base64' }, (err, b64) => {
+                    if (err) throw err;
+
+                    // And finally we post the image to Twitter
+                    T.post('media/upload', { media_data: b64 }, function(err, data) {
+                        if (err) {
+                            console.log('error!', err);
+                        } else {
+                            console.log('tweeting the image...');
+                            
+                            T.post(
+                                'statuses/update',
+                                {
+                                    media_ids: new Array(data.media_id_string)
+                                },
+                                function(err) {
+                                    if (err){
+                                    console.log('ERROR:\n', err);
+                                    }
+                                }
+                            );
+                        }
+                    });
+                });
+            });
         });
-  })
+    })
 );

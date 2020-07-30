@@ -1,17 +1,20 @@
 {
   "name": "yoshi-generator",
+  "author": "Maël Brunet",
   "version": "1.0.0",
-  "description": "",
+  "description": "A bot generating and posting images of imaginary yoshi prototypes",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js"
   },
-  "author": "",
   "license": "ISC",
   "dependencies": {
     "canvas": "^2.6.1",
+    "dotenv": "^8.2.0",
     "hex-rgb": "^4.1.0",
+    "jimp": "^0.14.0",
     "merge-images": "^2.0.0",
-    "pngjs": "^5.0.0"
+    "pngjs": "^5.0.0",
+    "twit": "^2.2.11"
   }
 }
