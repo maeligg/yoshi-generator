@@ -2,7 +2,7 @@ require('dotenv').config();
 const fs = require('fs'),
     PNG = require('pngjs').PNG,
     hexRgb = require('hex-rgb'),
-    Jimp = require('jimp')
+    Jimp = require('jimp'),
     Twit = require('twit'),
     config = {
         twitter: {
@@ -26,10 +26,16 @@ const yoshiPalette = {
 
 const greenPaletteRGB = yoshiPalette.green.map(color => hexRgb(color));
 
-const imageParts = [`./img/head/head${Math.floor(Math.random() * 15) + 1}.png`, `./img/body/body${Math.floor(Math.random() * 7) + 1}.png`, `./img/feet/feet${Math.floor(Math.random() * 3) + 1}.png`, `./img/tail/tail${Math.floor(Math.random() * 5) + 1}.png`];
+const imageParts = [
+    `./img/head/head${Math.floor(Math.random() * 15) + 1}.png`,
+    `./img/body/body${Math.floor(Math.random() * 7) + 1}.png`,
+    `./img/feet/feet${Math.floor(Math.random() * 3) + 1}.png`,
+    `./img/tail/tail${Math.floor(Math.random() * 5) + 1}.png`
+];
 
 const jimps = imageParts.map(imagePart => Jimp.read(imagePart));
 
+// We create the background and assemble the parts
 Promise.all(jimps).then(function(data) {
   return Promise.all(jimps);
 }).then(function(data) {
@@ -40,7 +46,7 @@ Promise.all(jimps).then(function(data) {
             .composite(data[1],62,48)
             .composite(data[2],62,72)
             .composite(data[3],90,0)
-            .write(`${__dirname}/dist/out-temp.png`);
+            .write('./dist/out-temp.png');
     });
 });
 
