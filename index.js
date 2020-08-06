@@ -27,7 +27,7 @@ const yoshiPalette = {
 const greenPaletteRGB = yoshiPalette.green.map(color => hexRgb(color));
 
 const imageParts = [
-    `./img/head/head${Math.floor(Math.random() * 15) + 1}.png`,
+    `./img/head/head${Math.floor(Math.random() * 22) + 1}.png`,
     `./img/body/body${Math.floor(Math.random() * 7) + 1}.png`,
     `./img/feet/feet${Math.floor(Math.random() * 3) + 1}.png`,
     `./img/tail/tail${Math.floor(Math.random() * 5) + 1}.png`
